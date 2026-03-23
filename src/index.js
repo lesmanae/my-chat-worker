@@ -9,6 +9,24 @@ export default {
       });
     }
 
+    if (request.method === "POST" && url.pathname === "/chat") {
+      try {
+        const body = await request.json();
+        const userMessage = body?.message || "";
+
+        return json({
+          ok: true,
+          reply: `Kamu bilang: ${userMessage}`,
+          note: "Ini masih dummy response"
+        });
+      } catch (error) {
+        return json({
+          ok: false,
+          error: "Body harus JSON valid"
+        }, 400);
+      }
+    }
+
     return json({
       ok: false,
       error: "Route tidak ditemukan"
