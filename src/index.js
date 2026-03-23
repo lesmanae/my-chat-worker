@@ -5,19 +5,33 @@ export default {
     if (request.method === "GET" && url.pathname === "/") {
       return json({
         ok: true,
-        message: "Halo, Worker aktif"
+        name: "my-chat-worker",
+        message: "Worker aktif",
+        endpoints: {
+          health: "GET /",
+          chat: "POST /chat"
+        }
       });
     }
 
     if (request.method === "POST" && url.pathname === "/chat") {
       try {
         const body = await request.json();
-        const userMessage = body?.message || "";
+        const userMessage = String(body?.message || "").trim();
+
+        if (!userMessage) {
+          return json({
+            ok: false,
+            error: "Field message wajib diisi"
+          }, 400);
+        }
 
         return json({
           ok: true,
-          reply: `Kamu bilang: ${userMessage}`,
-          note: "Ini masih dummy response"
+          data: {
+            role: "assistant",
+            content: `Kamu bilang: ${userMessage}`
+          }
         });
       } catch (error) {
         return json({
